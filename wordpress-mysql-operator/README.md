@@ -49,7 +49,7 @@ kubectl apply -f config/samples/wordpressyaml -n wordpress-mysql-operator-system
 
 Run the following command to verify that the installation was successful:
 
-```console
+```sh
 $ kubectl get all -n wordpress-mysql-operator-system
 
 NAME                                                               READY   STATUS    RESTARTS   AGE
