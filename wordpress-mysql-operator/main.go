@@ -30,6 +30,11 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+
+	wordpressmysqlv1alpha1 "github.com/example-inc/wordpress-mysql-operator/apis/wordpress-mysql/v1alpha1"
+	wordpressv1alpha1 "github.com/example-inc/wordpress-mysql-operator/apis/wordpress/v1alpha1"
+	wordpresscontrollers "github.com/example-inc/wordpress-mysql-operator/controllers/wordpress"
+	wordpressmysqlcontrollers "github.com/example-inc/wordpress-mysql-operator/controllers/wordpress-mysql"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -41,6 +46,8 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
+	utilruntime.Must(wordpressv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(wordpressmysqlv1alpha1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 
@@ -62,6 +69,7 @@ func main() {
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+		Namespace:              "",
 		Scheme:                 scheme,
 		MetricsBindAddress:     metricsAddr,
 		Port:                   9443,
@@ -74,6 +82,22 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err = (&wordpresscontrollers.WordpressReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("wordpress").WithName("Wordpress"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Wordpress")
+		os.Exit(1)
+	}
+	if err = (&wordpressmysqlcontrollers.WordpressReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("wordpress-mysql").WithName("Wordpress"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Wordpress")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("health", healthz.Ping); err != nil {

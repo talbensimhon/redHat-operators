@@ -1,0 +1,7 @@
+apiVersion: wordpress.example.com/v1alpha1
+kind: Wordpress
+
+resources:
+- wordpress_v1alpha1_wordpress.yaml
+- wordpress-mysql_v1alpha1_wordpress.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples

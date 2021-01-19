@@ -1,7 +1,17 @@
 domain: example.com
 layout: go.kubebuilder.io/v3
+multigroup: true
 projectName: wordpress-mysql-operator
 repo: github.com/example-inc/wordpress-mysql-operator
+resources:
+- crdVersion: v1
+  group: wordpress
+  kind: Wordpress
+  version: v1alpha1
+- crdVersion: v1
+  group: wordpress-mysql
+  kind: Wordpress
+  version: v1alpha1
 version: 3-alpha
 plugins:
   manifests.sdk.operatorframework.io/v2: {}

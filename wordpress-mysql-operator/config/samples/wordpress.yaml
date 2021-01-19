@@ -1,0 +1,6 @@
+apiVersion: wordpress.example.com/v1alpha1
+kind: Wordpress
+metadata:
+  name: mysite
+spec:
+  sqlRootPassword: plaintextpassword
